@@ -1,0 +1,79 @@
+<div class="container">
+  <mat-card class="first-element h-100">
+    <div class="title-header">
+      <span class="entity-name">
+        {{ selectedEntity?.name ? selectedEntity?.name : "Not Available" }}
+      </span>
+      <span *ngIf="selectedEntity?.name" class="entity-id">
+        (Id# {{ selectedEntity.id }})
+      </span>
+    </div>
+
+    <mat-accordion class="scrollable-y">
+      <mat-expansion-panel #details expanded>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Details</mat-panel-title>
+        </mat-expansion-panel-header>
+        <ng-container
+          *ngIf="details.expanded && selectedEntity && selectedEntityDefinition"
+        >
+          <app-entity-details-wrapper
+            [mapEntityPresent]="mapEntityName"
+            [selectedEntity]="selectedEntity"
+            [selectedEntityDefinition]="selectedEntityDefinition"
+            (navigatedToOtherEntity)="navigatedToOtherEntity($event)"
+            (edited)="edited()"
+            [platformBasedAttributeVisibilityKey]="'mobileVisible'"
+            (openPassiveEquipmentTab)="openPassiveEquipmentTab()"
+          ></app-entity-details-wrapper>
+        </ng-container>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel #agreements>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Agreements</mat-panel-title>
+        </mat-expansion-panel-header>
+        <ng-container *ngIf="agreements.expanded && selectedEntity">
+          <mat-tab-group
+            fitInkBarToContent
+            mat-stretch-tabs="false"
+            mat-align-tabs="start"
+            class="bg-ffffff tab-group h-100"
+            (selectedTabChange)="onEquipmentTabChange($any($event))"
+          >
+            <mat-tab label="Landlord Agreements">
+              <ng-template mat-tab-label>
+                <span class="tab-label">Landlord Agreements</span>
+              </ng-template>
+              <mat-divider></mat-divider>
+              @if (
+                selectedEquipmentTabIndex === 0 && selectedEntity !== undefined
+              ) {
+                <app-entity-landlord-agreements
+                  [mapEntityPresent]="mapEntityName"
+                  [selectedEntity]="selectedEntity"
+                  (navigatedToOtherEntity)="navigatedToOtherEntity($event)"
+                ></app-entity-landlord-agreements>
+              }
+            </mat-tab>
+            <mat-tab label="Contract Agreements">
+              <ng-template mat-tab-label>
+                <span class="tab-label">Contract Agreements</span>
+              </ng-template>
+              <mat-divider></mat-divider>
+              @if (
+                selectedEquipmentTabIndex === 1 && selectedEntity !== undefined
+              ) {
+                <app-entity-contractor-agreements
+                  [mapEntityPresent]="mapEntityName"
+                  [selectedEntity]="selectedEntity"
+                  (navigatedToOtherEntity)="navigatedToOtherEntity($event)"
+                ></app-entity-contractor-agreements>
+              }
+            </mat-tab>
+          </mat-tab-group>
+        </ng-container>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </mat-card>
+</div>

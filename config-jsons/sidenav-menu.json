@@ -1,0 +1,37 @@
+[
+  {
+    "icon": "assets/nav-menu-icons/ic_dashboard.png",
+    "label": "Dashboard",
+    "route": "my_sites"
+  },
+  {
+    "icon": "assets/nav-menu-icons/ic_places.png",
+    "label": "Places",
+    "route": "places"
+  },
+  {
+    "icon": "assets/nav-menu-icons/ic_sites.png",
+    "label": "Sites",
+    "route": "sites"
+  },
+  {
+    "icon": "assets/nav-menu-icons/ic_active_equipments.png",
+    "label": "Active Equipment",
+    "route": "activeequipment"
+  },
+  {
+    "icon": "assets/nav-menu-icons/ic_passive_equipments.png",
+    "label": "Passive Equipment",
+    "route": "passiveequipment"
+  },
+  {
+    "icon": "assets/nav-menu-icons/ic_contacts.png",
+    "label": "Contacts",
+    "route": "contacts"
+  },
+  {
+    "icon": "assets/nav-menu-icons/ic_tenants.png",
+    "label": "Operators",
+    "route": "tenants"
+  }
+]

@@ -1,0 +1,52 @@
+@if (isWorkflowtemplate) {
+  <router-outlet></router-outlet>
+} @else {
+  <mat-toolbar>
+    <mat-toolbar-row>
+      <div class="col-md-2">
+        @if (!showBackButton) {
+          <img
+            class="menu-slider"
+            src="assets/icons/ic-hamburger.svg"
+            (click)="toggleSidenav($event)"
+          />
+        } @else {
+          <img
+            class="menu-back"
+            src="assets/icons/ic-back.svg"
+            (click)="backClicked($event)"
+          />
+        }
+        <img
+          class="header-logo"
+          src="assets/icons/truebyl_header_logo.png"
+          style="height: 38px"
+        />&nbsp;&nbsp;
+      </div>
+      <div class="col-md-8"></div>
+    </mat-toolbar-row>
+  </mat-toolbar>
+  <mat-sidenav-container #matSidenavContainer class="nav-container-main">
+    <!-- Adding a margin-top to the sidenav to avoid overlapping with the toolbar -->
+    <mat-sidenav
+      #sidenav
+      [disableClose]="true"
+      [opened]="sidenavWidth() !== '0px'"
+      mode="over"
+      fixedInViewport="true"
+      [style.width]="sidenavWidth()"
+      style="margin-top: 54px"
+    >
+      <app-sidenav-wrapper
+        (closeSideNav)="collapsed.set(true)"
+      ></app-sidenav-wrapper>
+    </mat-sidenav>
+
+    <mat-sidenav-content class="nav-container-child">
+      <div #target>
+        <app-breadcrumb></app-breadcrumb>
+      </div>
+      <router-outlet></router-outlet>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+}

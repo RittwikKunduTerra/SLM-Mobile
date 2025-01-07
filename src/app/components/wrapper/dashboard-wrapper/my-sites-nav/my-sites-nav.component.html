@@ -1,0 +1,51 @@
+<div class="container">
+  <mat-tab-group
+    fitInkBarToContent
+    mat-stretch-tabs="false"
+    mat-align-tabs="start"
+    class="bg-ffffff h-100"
+    (selectedTabChange)="onTabChangeSites($event)"
+  >
+    <mat-tab label="Details">
+      <ng-template mat-tab-label>
+        <span class="tab-label">My Sites</span>
+      </ng-template>
+      <mat-divider></mat-divider>
+      @if (sitesTabIndex === 0) {
+        <mat-card class="first-element">
+          <div class="h-100">
+            <app-entity-data-wrapper
+              class="h-100"
+              [searchInput]="searchInput"
+              (onEntityClick)="onEntityClick('my_sites')"
+              [entityType]="entityType.MySites"
+              [latitude_longitude]="latitudeLongitude"
+              [platformBasedAttributeVisibilityKey]="'mobileVisible'"
+            ></app-entity-data-wrapper>
+          </div>
+        </mat-card>
+      }
+    </mat-tab>
+    <mat-tab label="Details">
+      <ng-template mat-tab-label>
+        <span class="tab-label">Near By Sites</span>
+      </ng-template>
+      <mat-divider></mat-divider>
+
+      @if (sitesTabIndex === 1) {
+        <mat-card class="first-element">
+          <div class="h-100">
+            <app-entity-data-wrapper
+              class="h-100"
+              [searchInput]="searchInput"
+              (onEntityClick)="onEntityClick('nearBy_sites')"
+              [entityType]="entityType.NearBySites"
+              [latitude_longitude]="latitudeLongitude"
+              [platformBasedAttributeVisibilityKey]="'mobileVisible'"
+            ></app-entity-data-wrapper>
+          </div>
+        </mat-card>
+      }
+    </mat-tab>
+  </mat-tab-group>
+</div>

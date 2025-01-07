@@ -1,0 +1,79 @@
+<div class="container">
+  <mat-card class="full-size-box h-100">
+    <div class="title-header">
+      <span class="entity-name">
+        {{ selectedEntity?.name ? selectedEntity?.name : "Not Available" }}
+      </span>
+      <span *ngIf="selectedEntity?.name" class="entity-id">
+        (Id# {{ selectedEntity.id }})
+      </span>
+    </div>
+    
+    <mat-accordion class="scrollable-y">
+      <mat-expansion-panel #details expanded>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Details</mat-panel-title>
+        </mat-expansion-panel-header>
+        <ng-container *ngIf="details.expanded && selectedEntity && selectedEntityDefinition">
+          <app-entity-details [selectedEntity]="selectedEntity"
+            [selectedEntityDefinition]="selectedEntityDefinition" (navigatedToOtherEntity)="navigatedToOtherEntity($event)" (edited)="edited()"></app-entity-details>
+        </ng-container>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel #attributes>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Attributes</mat-panel-title>
+        </mat-expansion-panel-header>
+        <ng-container *ngIf="attributes.expanded && selectedEntity && selectedEntityDefinition">
+          <app-entity-attributes [selectedEntity]="selectedEntity"
+            [selectedEntityDefinition]="selectedEntityDefinition" [platformBasedAttributeVisibilityKey]="'mobileVisible'"></app-entity-attributes>
+        </ng-container>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel #sites>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Sites</mat-panel-title>
+        </mat-expansion-panel-header>
+        <ng-container *ngIf="sites.expanded && selectedEntity && selectedEntityDefinition">
+          <app-entity-sites [selectedEntity]="selectedEntity" (navigatedToOtherEntity)="navigatedToOtherEntity($event)"></app-entity-sites>
+        </ng-container>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel #activeEquipment>
+          <mat-expansion-panel-header>
+            <mat-panel-title>Active Equipment</mat-panel-title>
+          </mat-expansion-panel-header>
+          <ng-container *ngIf="activeEquipment.expanded && selectedEntity && selectedEntityDefinition">
+              <app-tenants-active-equipment [selectedEntity]="selectedEntity" (navigatedToOtherEntity)="navigatedToOtherEntity($event)"></app-tenants-active-equipment>
+          </ng-container>
+        </mat-expansion-panel>
+
+
+
+      <mat-expansion-panel #documents>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Documents</mat-panel-title>
+        </mat-expansion-panel-header>
+        <ng-container *ngIf="documents.expanded && selectedEntity && selectedEntityDefinition">
+          <div class="h-100">
+          <app-documents [selectedEntity]="selectedEntity"
+            [selectedEntityDefinition]="selectedEntityDefinition"></app-documents>
+            </div>
+           </ng-container>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel #tickets>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Tickets</mat-panel-title>
+        </mat-expansion-panel-header>
+        <ng-container *ngIf="selectedEntity && tickets.expanded">
+          <div class="h-100">
+            <app-entity-tickets [selectedEntity]="selectedEntity" (navigatedToOtherEntity)="navigatedToOtherEntity($event)"></app-entity-tickets>
+
+            </div>
+           </ng-container>
+      </mat-expansion-panel>
+
+    </mat-accordion>
+  </mat-card>
+  </div>

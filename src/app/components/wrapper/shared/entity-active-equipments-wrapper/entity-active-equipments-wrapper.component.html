@@ -1,0 +1,167 @@
+<div
+  class="bg-color-white parent"
+  [ngClass]="{ 'min-max-height': mapEntityPresent }"
+>
+  @if (isLoading$ | async) {
+    <div class="loader-container h-100">
+      <div class="loader"></div>
+    </div>
+  } @else {
+    @if (filteredArray.length > 0) {
+      <div class="child_one p-12">
+        <div class="list-container">
+          <div
+            *ngFor="let item of filteredArray; let rowIndex = index"
+            class="list-item clickable"
+            (click)="navigateToRelevantEntity(rowIndex)"
+            [ngClass]="{ 'alternate-row': rowIndex % 2 === 1 }"
+          >
+          <div class="d-flex flex-wrap list-container-gap">
+            <ng-container
+              *ngIf="userVisibleDefinition.length > 2; else singleColumnLayout"
+            >
+              <div
+                *ngFor="let field of userVisibleDefinition; let j = index"
+                [ngClass]="{
+                  'mb-1': true
+                }"
+                class="list-container-double-column"
+              >
+                <div class="title">
+                  {{ getLabel(field.key) }}
+                </div>
+          
+                <div
+                  class="value"
+                  [class.right-aligned]="
+                    field.key === possibleStaticAttributesEnums.mergedTagStatus
+                  "
+                >
+                  @if (field.key === possibleStaticAttributesEnums.mergedTagStatus) {
+                    <div class="bar-code-button">
+                      <div
+                        class="rag-dot"
+                        [ngClass]="item[field.key]"
+                        (click)="
+                          openEquipmentDetailsModal(
+                            $any(Equipment_Details_Modal),
+                            rowIndex
+                          );
+                          $event.stopPropagation()
+                        "
+                      ></div>
+                    </div>
+                  } @else {
+                    {{ item[field.key] || "-" }}
+                  }
+                </div>
+              </div>
+            </ng-container>
+          
+            <ng-template #singleColumnLayout>
+              <div
+                *ngFor="let field of userVisibleDefinition"
+                class="mb-1 mt-1 list-container-single-column"
+              >
+                <div class="title">
+                  {{ getLabel(field.key) }}
+                </div>
+          
+                <div
+                  class="value"
+                  [class.right-aligned]="
+                    field.key === possibleStaticAttributesEnums.mergedTagStatus
+                  "
+                >
+                  @if (field.key === possibleStaticAttributesEnums.mergedTagStatus) {
+                    <div
+                      class="rag-dot"
+                      [ngClass]="item[field.key]"
+                      (click)="
+                        openEquipmentDetailsModal(
+                          $any(Equipment_Details_Modal),
+                          rowIndex
+                        );
+                        $event.stopPropagation()
+                      "
+                    ></div>
+                  } @else {
+                    {{ item[field.key] || "-" }}
+                  }
+                </div>
+              </div>
+            </ng-template>
+          </div>
+          
+          </div>
+        </div>
+      </div>
+
+      <div class="child_two">
+        <div class="d-flex justify-content-end align-items-center">
+          <div class="title">
+            Page
+            {{
+              selectedEntityData === undefined || selectedEntityData === null
+                ? 0
+                : selectedEntityData?.pageNumber
+            }}
+            of
+            {{
+              selectedEntityData === undefined || selectedEntityData === null
+                ? 0
+                : !selectedEntityData?.next
+                  ? selectedEntityData?.pageNumber
+                  : getTotalPageCount()
+            }}
+          </div>
+
+          <div class="p-2">
+            <button
+              class="prev-button"
+              mat-icon-button
+              [disabled]="selectedEntityData?.previous == false"
+              color="primary"
+              (click)="previousList()"
+            >
+              <mat-icon class="col-md-6 h3 m-0 last-item-button-mat-icon"
+                >keyboard_arrow_left</mat-icon
+              >
+            </button>
+
+            <button
+              class="ml-10 next-button"
+              mat-icon-button
+              [disabled]="selectedEntityData?.next == false"
+              color="primary"
+              (click)="nextList()"
+            >
+              <mat-icon class="col-md-6 h3 m-0 last-item-button-mat-icon"
+                >keyboard_arrow_right</mat-icon
+              >
+            </button>
+          </div>
+        </div>
+      </div>
+    } @else {
+      <app-no-records class="child_one"></app-no-records>
+    }
+  }
+</div>
+
+<ng-template #Equipment_Details_Modal>
+  <app-modal
+    [modalReference]="equipmentDetailsModalRef"
+    [title]="equipmentDetailsTitle"
+    [dismissBtnLabel]="'Close'"
+    [hideDismiss]="false"
+    [isPaddingRequired]="false"
+  >
+    <app-equipment-details-modal
+      [selectedEntityData]="selectedEquipment"
+      [entityStaticDefinitionList]="entityStaticDefinitionList"
+      [entityDynamicDefinitionList]="entityDynamicDefinitionList"
+      (navigatedToOtherEntity)="navigatedToOtherEntityFromChild($any($event))"
+    ></app-equipment-details-modal>
+  </app-modal>
+</ng-template>

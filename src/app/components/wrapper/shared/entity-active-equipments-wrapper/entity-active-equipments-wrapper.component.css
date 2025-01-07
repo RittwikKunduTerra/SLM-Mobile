@@ -1,0 +1,32 @@
+.clickable {
+  cursor: pointer;
+}
+.rag-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.red {
+  background-color: red;
+}
+
+.amber {
+  background-color: orange;
+}
+
+.green {
+  background-color: green;
+}
+
+td.right-aligned {
+  text-align: right;
+  padding-right: 30px;
+}
+
+.bar-code-button {
+  width: 26px;
+  height: 26px;
+  padding: 0px;
+}

@@ -1,0 +1,401 @@
+<div class="bg-color-white h-100">
+    @if (isLoading$ | async) {
+    <div class="loader-container h-100">
+      <div class="loader"></div>
+    </div>
+    }@else{
+    <div class="horizontal-container">
+      @if ((selectedEntity?.entityName === EntityType.Sites &&
+      dynamicEntityDefinitionList['derivedTagStatus']?.[platformBasedAttributeVisibilityKey]) ||
+      (selectedEntity?.entityName === EntityType.ActiveEquipments &&
+      dynamicEntityDefinitionList['mergedTagStatus']?.[platformBasedAttributeVisibilityKey])||
+      (selectedEntity?.entityName === EntityType.PassiveEquipments &&
+      dynamicEntityDefinitionList['mergedTagStatus']?.[platformBasedAttributeVisibilityKey])) {
+      <div class="tag-status value">
+        <div class="status">
+          <span class="legend-rag-dot green"></span>
+          <div class="disable">Tagged</div>
+        </div>
+        <div class="status">
+          <span class="legend-rag-dot amber"></span>
+          <div class="disable">Partially Tagged</div>
+        </div>
+        <div class="status">
+          <span class="legend-rag-dot red"></span>
+          <div class="disable">Not Tagged</div>
+        </div>
+      </div>
+      }
+  
+      @if(!mapEntityPresent){
+      @if (editableEntityData.length > 0 && isAddEditRequired == true) {
+      <div class="button-container">
+        <app-button [label]="'Edit'" (clicked)="editAttribute($any(Edit_Attribute))"></app-button>
+      </div>
+      }
+      }
+    </div>
+    <mat-divider></mat-divider>
+  
+  
+    <div class="row p-12 vertical-scroll mr-0" [ngClass]="{'min-max-height': mapEntityPresent}">
+      @if (userVisibleEntityData.length > 0) {
+      <ng-container *ngFor="let keyValuePair of userVisibleEntityData; let i = index">
+        <div class="col-6 pb-10">
+          <div class="d-flex flex-column mb-15">
+            <div class="flex-fill horizontal">
+  
+              <div class="mb-20">
+                <div class="title pl-10 txt-wrap">
+                  @if (selectedEntity?.entityName === EntityType.Tenants) {
+                  @if (keyValuePair.value.definition?.fileType !==
+                  fileDataType.Image && keyValuePair.key !== 'logo') {
+                  {{ keyValuePair.value.definition["label"] }}
+                  }
+                  }@else{
+                  {{ keyValuePair.value.definition["label"] }}
+  
+                  }
+                </div>
+                <div class="value pl-10 pb-10 txt-wrap">
+                  @if (
+                  keyValuePair.value.definition?.contentType ===
+                  contentType.File
+                  ) {
+                  @if (selectedEntity?.entityName === EntityType.Tenants && keyValuePair.value.definition?.fileType ===
+                  fileDataType.Image && keyValuePair.key === 'logo') {
+                  @if (
+                  keyValuePair.value.dataRow[keyValuePair.key] != null &&
+                  keyValuePair.value.dataRow[keyValuePair.key] != undefined &&
+                  keyValuePair.value.dataRow[keyValuePair.key] != "" &&
+                  !isContentEmbedded(
+                  keyValuePair.value.dataRow[keyValuePair.key]
+                  ) && getParsedDataRow(keyValuePair.value.dataRow[keyValuePair.key])?.content?.trim() !== '' &&
+                  getParsedDataRow(keyValuePair.value.dataRow[keyValuePair.key])?.filename?.trim() !== ''
+                  ) {
+                  @if (isLogoLoading) {
+                  <div class="logo-loading">
+                    Loading...
+                  </div>
+  
+                  }@else{
+                  <a [href]="
+                    getFileUrl(keyValuePair.value.dataRow[keyValuePair.key])
+                  " target="_blank">
+                    <img [src]="keyValuePair.value?.logoUrl" alt="Image" class="logo" />
+                  </a>
+                  }
+  
+                  }
+                  }
+                  } @else {
+                  @if (
+                  keyValuePair.value.definition?.contentType ===
+                  contentType.Text &&
+                  keyValuePair.value.definition?.dataType === textDataType.Date
+                  ) {
+                  {{
+                  keyValuePair.value.dataRow[keyValuePair.key]
+                  | date: "dd-MMM-yyyy"
+                  }}
+                  } @else if (
+                  keyValuePair.value.definition?.contentType ===
+                  contentType.Text &&
+                  keyValuePair.value.definition?.dataType ===
+                  textDataType.Datetime
+                  ) {
+                  @if (selectedEntity?.entityName === EntityType.PaymentAdvices) {
+                  @if (keyValuePair.key === PossibleStaticAttributesEnums.cycleStartDate || keyValuePair.key ===
+                  PossibleStaticAttributesEnums.cycleEndDate) {
+                  {{
+                  keyValuePair.value.dataRow[keyValuePair.key]
+                  | date: "dd-MMM-yyyy" || '-'
+                  }}
+                  }@else {
+                  {{
+                  keyValuePair.value.dataRow[keyValuePair.key]
+                  | date: "dd-MMM-yyyy HH:mm"
+                  }}
+                  }
+                  }@else {
+                  @if (selectedEntity?.entityName === EntityType.Charges && keyValuePair.key ===
+                  PossibleStaticAttributesEnums.startDate || keyValuePair.key ===
+                  PossibleStaticAttributesEnums.stopDate) {
+                  {{
+                  keyValuePair.value.dataRow[keyValuePair.key]
+                  | date: "dd-MMM-yyyy" || '-'
+                  }}
+                  }@else {
+                  {{
+                  keyValuePair.value.dataRow[keyValuePair.key]
+                  | date: "dd-MMM-yyyy HH:mm"
+                  }}
+                  }
+  
+                  }
+  
+                  } @else {
+                  @if (
+                  keyValuePair.value.dataRow[keyValuePair.key] ===
+                  undefined ||
+                  keyValuePair.value.dataRow[keyValuePair.key] === null ||
+                  keyValuePair.value.dataRow[keyValuePair.key] === ""
+                  ) {
+                  <div>-</div>
+                  }
+                  @else{
+                  @if (
+                  keyValuePair.key === PossibleStaticAttributesEnums.placeId
+                  ) {
+                  <a (click)="navigateToPlaces(keyValuePair.value.dataRow[keyValuePair.key])" class="cursor-pointer">
+                    {{
+                    getValueFromDynamicAttributesFromStaticKey(
+                    PossibleStaticAttributesEnums.placeName
+                    )
+                    }}
+                  </a>
+                  } @else if (
+                  keyValuePair.key ===
+                  PossibleStaticAttributesEnums.tenantId
+                  ) {
+                  @if ( getValueFromDynamicAttributesFromStaticKey(
+                  PossibleStaticAttributesEnums.tenantName
+                  )) {
+                  <a (click)="navigateToOperators(keyValuePair.value.dataRow[keyValuePair.key])" class="cursor-pointer">
+                    {{
+                    getValueFromDynamicAttributesFromStaticKey(
+                    PossibleStaticAttributesEnums.tenantName
+                    )
+                    }}
+                  </a>
+                  }@else {
+                  -
+                  }
+  
+                  }@else if (
+                  keyValuePair.key ===
+                  PossibleStaticAttributesEnums.parent
+                  ) {
+                  @if ( getValueFromDynamicAttributesFromStaticKey(
+                  PossibleStaticAttributesEnums.parentName
+                  )) {
+                  <a (click)="navigateToEquipment(keyValuePair.value.dataRow[keyValuePair.key])" class="cursor-pointer">
+                    {{
+                    getValueFromDynamicAttributesFromStaticKey(
+                    PossibleStaticAttributesEnums.parentName
+                    )
+                    }}
+                  </a>
+                  }@else {
+                  -
+                  }
+                  } @else if (
+                  keyValuePair.key ===
+                  PossibleStaticAttributesEnums.locationId
+                  ) {
+                  <a (click)="navigateToLocation(keyValuePair.value.dataRow[keyValuePair.key])" class="cursor-pointer">
+                    {{
+                    getValueFromDynamicAttributesFromStaticKey(
+                    PossibleStaticAttributesEnums.location
+                    )
+                    }}
+                  </a>
+                  }@else if (
+                  keyValuePair.key ===
+                  PossibleStaticAttributesEnums.siteId
+                  ) {
+                  <a (click)="navigateToSites(keyValuePair.value.dataRow[keyValuePair.key])" class="cursor-pointer">
+                    {{
+                    getValueFromDynamicAttributesFromStaticKey(
+                    PossibleStaticAttributesEnums.siteName
+                    )
+                    }}
+                  </a>
+                  } @else if (
+                  keyValuePair.key ===
+                  PossibleStaticAttributesEnums.amount
+                  ) {
+                  <input type="text" matInput class="input-no-border"
+                    [(ngModel)]="keyValuePair.value.dataRow[keyValuePair.key]" currencyMask [options]="currencyOptions"
+                    readonly />
+                  } @else {
+                  @if (keyValuePair.key === PossibleStaticAttributesEnums.site) {
+                  @if (keyValuePair.value.dataRow[keyValuePair.key] === "true") {
+                  <img src="assets/icons/checked.png" class="site-checkbox" />
+  
+                  }@else{
+                  <img src="assets/icons/unchecked.png" class="site-checkbox" />
+  
+                  }
+                  }@else {
+                  @if (selectedEntity?.entityName === EntityType.Sites && keyValuePair.key ===
+                  "derivedTagStatus") {
+                  <div class="tag-with-label">
+                      <div class="bar-code-button" (click)="navigateToPassiveEquipmentTab()">
+                        <div [ngClass]="keyValuePair.value.dataRow[keyValuePair.key]" class="rag-dot"></div>
+                      </div>
+  
+                    <div class="value tag-hint">
+                      ({{getEquipmentStatusEnumValueByKey(keyValuePair.value.dataRow[keyValuePair.key])}}) </div>
+                  </div>
+  
+                  }@else if ((selectedEntity?.entityName === EntityType.ActiveEquipments || selectedEntity?.entityName ===
+                  EntityType.PassiveEquipments)
+                  && keyValuePair.key === "mergedTagStatus") {
+                  <div class="tag-with-label">
+                    <div class="bar-code-button" (click)="openEquipmentDetailsModal($any(Equipment_Details_Modal))">
+                      <div [ngClass]="keyValuePair.value.dataRow[keyValuePair.key]" class="rag-dot"></div>
+                    </div>
+                    <div class="value tag-hint">
+                      ({{getEquipmentStatusEnumValueByKey(keyValuePair.value.dataRow[keyValuePair.key])}}) </div>
+                  </div>
+                  }@else {
+                  {{ keyValuePair.value.dataRow[keyValuePair.key]}}
+  
+                  }
+                  }
+                  }
+                  }
+                  }
+                  }
+                </div>
+              </div>
+  
+            </div>
+          </div>
+  
+        </div>
+        <div class="w-100" *ngIf="(i + 1) % 2 === 0"></div>
+      </ng-container>
+      }@else {
+      <app-no-records class="child_one"></app-no-records>
+      }
+      @if (selectedEntity?.entityName === EntityType.PaymentAdvices) {
+      <div class="download-button-div">
+        <button class="btn full-width-button" (click)="downloadPostedPaymentAdvice()">Download
+          <img src="assets/icons/ic-download-excel.png" alt="Download Icon" class="icon">
+  
+        </button>
+      </div>
+      }
+  
+    </div>
+    }
+  </div>
+  <ng-template #Edit_Attribute>
+    @if (editableEntityData.length > 0) {
+    <app-edit-attributes [editDetailsModalRef]="editDetailsModalRef!" [buttonLabel]="'Update'"
+      [editEntityData]="editableEntityData" [selectedEntity]="selectedEntityDataResponse"
+      (isClosePopupAndRefreshRequired)="closePopupAndRefresh($event)"
+      (openEntityDataPicker)="openEntityDataPickerForAdd($event)" [title]="'Details'"
+      [approvalRequired]="selectedEntityDefinition?.approvalRequired">
+    </app-edit-attributes>
+    }
+  </ng-template>
+  
+  <ng-template #SelectPlace>
+    <app-modal [modalReference]="selectAEntityRef" [title]="'Select Place'" [btnTwoLabel]="'Select'"
+      (btnTwoFunction)="selectedEntityData(EntityType.Places)" [hideDismiss]="false" [isPaddingRequired]="false">
+      <app-entity-data-wrapper [pickerType]="EntityType.Places" [isHeaderRequired]="false"></app-entity-data-wrapper>
+    </app-modal>
+  </ng-template>
+  
+  <ng-template #SelectTenant>
+    <app-modal [modalReference]="selectAEntityRef" [title]="'Select Tenant'" [btnTwoLabel]="'Select'"
+      (btnTwoFunction)="selectedEntityData(EntityType.Tenants)" [hideDismiss]="false" [isPaddingRequired]="false">
+      <app-entity-data-wrapper [pickerType]="EntityType.Tenants" [isHeaderRequired]="false"></app-entity-data-wrapper>
+    </app-modal>
+  </ng-template>
+  
+  <ng-template #SelectActiveEquipment>
+    <app-modal [modalReference]="selectAEntityRef" [title]="'Select Equipment'" [btnTwoLabel]="'Select'"
+      (btnTwoFunction)="selectedEntityData(EntityType.ActiveEquipments)" [hideDismiss]="false"
+      [isPaddingRequired]="false">
+      <app-entity-data-wrapper [pickerType]="EntityType.ActiveEquipments" [isHeaderRequired]="false"></app-entity-data-wrapper>
+    </app-modal>
+  </ng-template>
+  
+  <ng-template #SelectPassiveEquipment>
+    <app-modal [modalReference]="selectAEntityRef" [title]="'Select Equipment'" [btnTwoLabel]="'Select'"
+      (btnTwoFunction)="selectedEntityData(EntityType.PassiveEquipments)" [hideDismiss]="false"
+      [isPaddingRequired]="false">
+      <app-entity-data-wrapper [pickerType]="EntityType.PassiveEquipments" [isHeaderRequired]="false"></app-entity-data-wrapper>
+    </app-modal>
+  </ng-template>
+  
+  <ng-template #SelectSite>
+    <app-modal [modalReference]="selectAEntityRef" [title]="'Select Site'" [btnTwoLabel]="'Select'"
+      (btnTwoFunction)="selectedEntityData(EntityType.Sites)" [hideDismiss]="false" [isPaddingRequired]="false">
+      <app-entity-data-wrapper [pickerType]="EntityType.Sites" [isHeaderRequired]="false"></app-entity-data-wrapper>
+    </app-modal>
+  </ng-template>
+  
+  
+  <ng-template #SelectLocation>
+    <app-modal [modalReference]="selectLocationRef" [title]="'Select Location'" [btnTwoLabel]="'Select'"
+      [btnOneLabel]="'Cancel'" (btnTwoFunction)="locationSelected()" [hideDismiss]="false" [isPaddingRequired]="false"
+      (isClosePopupAndRefreshRequired)="locationPopupClosed()">
+      <mat-tab-group fitInkBarToContent mat-stretch-tabs="false" mat-align-tabs="start" class="bg-ffffff tab-group h-100"
+        (selectedTabChange)="onTabChange($any($event))">
+        <mat-tab label="Places">
+          <ng-template mat-tab-label>
+            <span class="tab-label">Places</span>
+          </ng-template>
+          <mat-divider></mat-divider>
+          @if (selectedTabIndex === 0) {
+          <app-entity-data-wrapper [pickerType]="locationTypeEnums.places" [isHeaderRequired]="false"></app-entity-data-wrapper>
+          }
+        </mat-tab>
+        <mat-tab label="Sites">
+          <ng-template mat-tab-label>
+            <span class="tab-label">Sites</span>
+          </ng-template>
+          <mat-divider></mat-divider>
+          @if (selectedTabIndex === 1) {
+          <app-entity-data-wrapper [pickerType]="locationTypeEnums.sites" [isHeaderRequired]="false"></app-entity-data-wrapper>
+          }
+        </mat-tab>
+        <mat-tab label="Contacts">
+          <ng-template mat-tab-label>
+            <span class="tab-label">Contacts</span>
+          </ng-template>
+          <mat-divider></mat-divider>
+          @if (selectedTabIndex === 2) {
+          <mat-tab-group fitInkBarToContent mat-stretch-tabs="false" mat-align-tabs="start"
+            class="bg-ffffff tab-group h-100" (selectedTabChange)="onContactsTabChange($any($event))">
+            <mat-tab label="Staff">
+              <ng-template mat-tab-label>
+                <span class="tab-label">Staff</span>
+              </ng-template>
+              <mat-divider></mat-divider>
+              @if (selectedContactsTabIndex === 0) {
+              <app-entity-data-wrapper [pickerType]="locationTypeEnums.contacts_staffs"
+                [isHeaderRequired]="false"></app-entity-data-wrapper>
+              }
+            </mat-tab>
+            <mat-tab label="Contractor">
+              <ng-template mat-tab-label>
+                <span class="tab-label">Contractor</span>
+              </ng-template>
+              <mat-divider></mat-divider>
+              @if (selectedContactsTabIndex === 1) {
+              <app-entity-data-wrapper [pickerType]="locationTypeEnums.contacts_contractor"
+                [isHeaderRequired]="false"></app-entity-data-wrapper>
+              }
+            </mat-tab>
+          </mat-tab-group>
+          }
+        </mat-tab>
+      </mat-tab-group>
+    </app-modal>
+  </ng-template>
+  
+  <ng-template #Equipment_Details_Modal>
+    <app-modal [modalReference]="equipmentDetailsModalRef" [title]="equipmentDetailsTitle" [dismissBtnLabel]="'Close'"
+      [hideDismiss]="false" [isPaddingRequired]="false">
+      <app-equipment-details-modal [selectedEntityData]="selectedEntityDataResponse"
+        [entityStaticDefinitionList]="staticEntityDefinitionList"
+        [entityDynamicDefinitionList]="dynamicEntityDefinitionList"
+        (navigatedToOtherEntity)="navigatedToOtherEntityFromChild($any($event))"></app-equipment-details-modal>
+    </app-modal>
+  </ng-template>

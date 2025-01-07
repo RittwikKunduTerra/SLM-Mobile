@@ -1,0 +1,86 @@
+{
+    "places": [
+        "id",
+        "startDate",
+        "stopDate",
+        "name",
+        "address",
+        "latitude",
+        "longitude",
+        "site"
+    ],
+    "sites": [
+        "id",
+        "startDate",
+        "stopDate",
+        "name",
+        "latitude",
+        "longitude",
+        "placeId"
+    ],
+    "activeequipment": [
+        "id",
+        "startDate",
+        "stopDate",
+        "name",
+        "locationId",
+        "tenantId"
+    ],
+    "passiveequipment": [
+        "id",
+        "startDate",
+        "stopDate",
+        "name",
+        "locationId"
+    ],
+    "contacts": [
+        "id",
+        "startDate",
+        "stopDate",
+        "name",
+        "address",
+        "contactNo",
+        "contactType",
+        "email"
+    ],
+    "charges": [
+        "id",
+        "startDate",
+        "stopDate",
+        "name",
+        "agreementId",
+        "amount",
+        "glCode"
+    ],
+    "tenants": [
+        "id",
+        "startDate",
+        "stopDate",
+        "name",
+        "address"
+    ],
+    "agreements": [
+        "id",
+        "startDate",
+        "stopDate",
+        "name",
+        "agreementType"
+    ],
+    "payment_advices": [
+        "paId",
+        "cycleStartDate",
+        "cycleEndDate",
+        "agreementName",
+        "id"
+    ],
+    "entities": [
+        "Places",
+        "Sites",
+        "Active Equipment",
+        "Passive Equipment",
+        "Contacts",
+        "Tenants",
+        "Agreements",
+        "Charges"
+    ]
+}

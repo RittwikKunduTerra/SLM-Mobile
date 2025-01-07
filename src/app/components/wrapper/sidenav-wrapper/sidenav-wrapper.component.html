@@ -1,0 +1,77 @@
+<div class="sidenav-header">
+  <img
+    [width]="profilePicSize()"
+    [height]="profilePicSize()"
+    src="/assets/icons/profile-pic.webp"
+  />
+  <div class="header-text" [class.hide-header-text]="sideNavCollapsed()">
+    <h2>Senthiljs&#x0040;gmail.com</h2>
+    <p>Supervisor</p>
+  </div>
+</div>
+<mat-nav-list class="mat-nav-list" [class.collapsed]="sideNavCollapsed()">
+  <mat-divider />
+  <ng-container *ngFor="let item of this.menuItems()">
+    <ng-container *ngIf="!item.subItems?.length; else expandableMenu">
+      <!-- Non-expandable menu item -->
+      <a
+        mat-list-item
+        class="menu-item"
+        [routerLink]="item.route"
+        routerLinkActive="selected-menu-item"
+        #rla="routerLinkActive"
+        [class.selected-menu-item]="rla.isActive"
+        (click)="menuItemClicked()"
+        tabindex="-1"
+      >
+        <span matListItemIcon class="flex-icon">
+          <img class="nav-icon" src="{{ item.icon }}" alt="" />
+        </span>
+        <span class="menu-label" matListItemTitle *ngIf="!sideNavCollapsed()">
+          {{ item.label }}
+        </span>
+      </a>
+      <mat-divider />
+    </ng-container>
+
+    <ng-template #expandableMenu>
+      <!-- Expandable menu item -->
+      <a
+        mat-list-item
+        class="menu-item"
+        [routerLink]="item.route"
+        routerLinkActive="selected-menu-item"
+        #rla="routerLinkActive"
+        [class.selected-menu-item]="rla.isActive"
+      >
+        <span matListItemIcon>
+          <img class="nav-icon" src="{{ item.icon }}" alt="" />
+        </span>
+        <div matListItemTitle class="disp-flex" *ngIf="!sideNavCollapsed()">
+          <span class="menu-label">{{ item.label }}</span>
+          <mat-icon
+            [style.transform]="
+              item.isExpanded ? 'rotate(180deg)' : 'rotate(0deg)'
+            "
+            class="color-7b"
+          >
+            expand_more
+          </mat-icon>
+        </div>
+      </a>
+      <mat-divider />
+    </ng-template>
+  </ng-container>
+  <a mat-list-item (click)="logOut()">
+    <span matListItemIcon class="flex-icon">
+      <img
+        class="nav-icon"
+        [src]="'assets/nav-menu-icons/ic-logout.svg'"
+        alt=""
+      />
+    </span>
+    <span class="menu-label" matListItemTitle *ngIf="!sideNavCollapsed()">
+      Logout
+    </span>
+  </a>
+</mat-nav-list>

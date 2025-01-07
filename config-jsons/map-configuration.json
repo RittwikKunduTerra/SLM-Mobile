@@ -1,0 +1,6 @@
+{
+    "mapId":"DEMO_MAP_ID",
+    "zoom":12,
+    "radius":5000,
+    "circleColor":"blue"
+}

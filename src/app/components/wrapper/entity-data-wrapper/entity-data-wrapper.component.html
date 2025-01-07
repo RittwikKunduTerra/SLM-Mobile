@@ -1,0 +1,564 @@
+<div
+  class="parent-container"
+  [ngClass]="{
+    'selected-place-as-popup':
+      pickerType !== undefined || entityType === EntityType.Charges,
+  }"
+>
+  @if (isHeaderRequired === true) {
+    <div #myDiv class="title-header d-flex justify-content-between">
+      <div class="flex-fill">
+        {{ getEntityEnumValueByKey(selectedEntityType) }}
+      </div>
+      <div>
+        @if (isAddEditRequired === true) {
+          <div class="button-container">
+            <app-button
+              [label]="
+                'Add ' + getEntityEnumSingularValueByKey(selectedEntityType)
+              "
+              (clicked)="addAttribute($any(Add_Attribute))"
+            ></app-button>
+          </div>
+        } @else {
+          @if (
+            selectedEntityType === EntityType.MySites ||
+            selectedEntityType === EntityType.NearBySites
+          ) {
+            <div class="button-container">
+              <app-button
+                [label]="viewCloseMap == false ? 'View Map' : 'Close Map'"
+                (clicked)="mapViewCloseClick()"
+              ></app-button>
+            </div>
+          }
+        }
+      </div>
+    </div>
+  }
+  @if (selectedEntityType) {
+    @if (
+      selectedEntityType === EntityType.MySites ||
+      selectedEntityType === EntityType.NearBySites
+    ) {
+      <div>
+        <mat-slider
+          class="slider"
+          [min]="minValue"
+          [max]="maxValue"
+          [step]="stepValue"
+          (change)="onInputChange($event, selectedEntityType)"
+        >
+          <input matSliderThumb [value]="defaultValue" />
+        </mat-slider>
+      </div>
+      <div class="d-flex justify-content-between p-1">
+        <div>
+          <div class="value">{{ sliderValue }} Km</div>
+        </div>
+        <div>
+          <div class="value">{{ maxValue }} Km</div>
+        </div>
+      </div>
+    } @else {
+      <div class="search">
+        <input
+          type="text"
+          class="input value ellipsis-input"
+          [(ngModel)]="searchInput"
+          [placeholder]="formatSearchPlaceholderKeys(searchPlaceholderKeys)"
+          (keyup.enter)="getFilteredEntityData()"
+          title="{{ formatSearchPlaceholderKeys(searchPlaceholderKeys) }}"
+        /><i class="material-icons i" (click)="getFilteredEntityData()"
+          >search</i
+        >
+      </div>
+    }
+  }
+  @if (selectedEntityType === EntityType.PaymentAdvices) {
+    <form [formGroup]="filterFormGroup">
+      <div class="d-flex filter-container">
+        <div class="row flex-grow-1 no-gutters">
+          <div
+            class="col-md-6 d-flex flex-column justify-content-start pa-start-date"
+          >
+            <div class="title pb-5">
+              Start Date
+              <span>*</span>
+            </div>
+            <div class="input-container value">
+              <input
+                matInput
+                type="text"
+                class="input-outline cursor-pointer"
+                [matDatepicker]="startDate"
+                formControlName="startDate"
+                readonly
+                (click)="startDate.open()"
+              />
+              <img
+                class="suffix-image"
+                src="assets/icons/ic-date-picker.png"
+                alt="Suffix Image"
+                (click)="startDate.open()"
+              />
+            </div>
+            <mat-datepicker #startDate></mat-datepicker>
+          </div>
+
+          <div
+            class="col-md-6 d-flex flex-column justify-content-start pa-stop-date"
+          >
+            <div class="title pb-5">
+              Stop Date
+              <span>*</span>
+            </div>
+            <div class="input-container value">
+              <input
+                matInput
+                type="text"
+                class="input-outline cursor-pointer"
+                [matDatepicker]="stopDate"
+                formControlName="stopDate"
+                readonly
+                (click)="stopDate.open()"
+              />
+              <img
+                class="suffix-image"
+                src="assets/icons/ic-date-picker.png"
+                alt="Suffix Image"
+                (click)="stopDate.open()"
+              />
+            </div>
+            <mat-datepicker #stopDate></mat-datepicker>
+          </div>
+        </div>
+
+        <div class="d-flex align-items-end ms-3">
+          <button
+            type="button"
+            class="btn button-custom"
+            (click)="initEntityDefinition(EntityType.PaymentAdvices)"
+          >
+            Retrieve
+          </button>
+        </div>
+      </div>
+    </form>
+  }
+  <mat-divider></mat-divider>
+  <div class="scroll-container">
+    @if (isLoading$ | async) {
+      <div class="loader-container h-100">
+        <div class="loader"></div>
+      </div>
+    } @else {
+      @if (filteredEntityData.length > 0) {
+        <div class="p-12 scroll">
+          <div class="row">
+            <div
+              *ngFor="let item of filteredEntityData; let i = index"
+              class="col-12 cursor-pointer item"
+            >
+              <div
+                class="row"
+                (click)="onRowClick(i)"
+                [class.highlighted-row]="selectedRowIndex === i"
+              >
+                <!-- Handle cases with more than 2 keys -->
+                <ng-container
+                  *ngIf="
+                    getObjectKeys(item).length > 2;
+                    else singleColumnLayout
+                  "
+                >
+                  <div
+                    *ngFor="let key of getObjectKeys(item); let j = index"
+                    [ngClass]="{
+                      'col-6':
+                        j % 2 !== 0 && j === getObjectKeys(item).length - 1,
+                      'col-6 col-sm-12': !(
+                        j % 2 == 0 && j === getObjectKeys(item).length - 1
+                      ),
+                    }"
+                    class="mb-1 mt-1"
+                  >
+                    <div [ngClass]="{ 'text-right': j % 2 !== 0 }">
+                      @if (
+                        key !== PossibleStaticAttributesEnums.mergedTagStatus &&
+                        key !== PossibleStaticAttributesEnums.derivedTagStatus
+                      ) {
+                        <div class="title">{{ getLabel(key) }}</div>
+                      }
+                      @if (
+                        selectedEntityType === EntityType.Tenants &&
+                        key === PossibleStaticAttributesEnums.logo
+                      ) {
+                        <a [href]="getFileUrl(item[key])" target="_blank">
+                          @if (getFileLogo(item[key])) {
+                            <img [src]="getFileLogo(item[key])" class="logo" />
+                          }
+                        </a>
+                      } @else if (selectedEntityType === EntityType.Places) {
+                        @if (
+                          key === PossibleStaticAttributesEnums.site &&
+                          item[key] === "true"
+                        ) {
+                          <img
+                            src="assets/icons/checked.png"
+                            class="site-checkbox"
+                          />
+                        } @else if (
+                          key === PossibleStaticAttributesEnums.site &&
+                          item[key] === "false"
+                        ) {
+                          <img
+                            src="assets/icons/unchecked.png"
+                            class="site-checkbox"
+                          />
+                        } @else {
+                          <div class="value">{{ item[key] }}</div>
+                        }
+                      } @else if (selectedEntityType === EntityType.Contacts) {
+                        @if (
+                          key === PossibleStaticAttributesEnums.contactType &&
+                          item[key] === "Person"
+                        ) {
+                          <img
+                            src="assets/icons/ic-contact-type-person.png"
+                            class="contact-type"
+                          />
+                        } @else if (
+                          key === PossibleStaticAttributesEnums.contactType &&
+                          item[key] === "Firm"
+                        ) {
+                          <img
+                            src="assets/icons/ic-contact-type-firm.png"
+                            class="contact-type"
+                          />
+                        } @else {
+                          <div class="value">{{ item[key] }}</div>
+                        }
+                      } @else if (
+                        selectedEntityType === EntityType.PaymentAdvices
+                      ) {
+                        @if (
+                          key ===
+                            PossibleStaticAttributesEnums.cycleStartDate ||
+                          key === PossibleStaticAttributesEnums.cycleEndDate
+                        ) {
+                          <div class="value">
+                            {{ item[key] | date: "dd-MMM-yyyy" || "-" }}
+                          </div>
+                        } @else {
+                          <div class="value">{{ item[key] }}</div>
+                        }
+                      } @else {
+                        @if (
+                          key ===
+                            PossibleStaticAttributesEnums.mergedTagStatus ||
+                          key === PossibleStaticAttributesEnums.derivedTagStatus
+                        ) {
+                          @if (
+                            this.entityDynamicFieldsDefinitionList[key]?.[
+                              this.platformBasedAttributeVisibilityKey
+                            ]
+                          ) {
+                            <div [ngClass]="item[key]" class="rag-dot"></div>
+                          }
+                        } @else {
+                          <div class="value">{{ item[key] }}</div>
+                        }
+                      }
+                    </div>
+
+                    <!-- Row Break -->
+                    <div
+                      *ngIf="
+                        j % 2 === 1 && j !== getObjectKeys(item).length - 1
+                      "
+                      class="w-100"
+                    ></div>
+                  </div>
+                </ng-container>
+
+                <!-- Single Column Fallback for Small Screens -->
+                <ng-template #singleColumnLayout>
+                  <div
+                    *ngFor="let key of getObjectKeys(item); let j = index"
+                    class="col-12 mb-1 mt-1"
+                  >
+                    @if (
+                      key !== PossibleStaticAttributesEnums.mergedTagStatus &&
+                      key !== PossibleStaticAttributesEnums.derivedTagStatus
+                    ) {
+                      <div class="title">{{ getLabel(key) }}</div>
+                    }
+
+                    @if (
+                      key === PossibleStaticAttributesEnums.mergedTagStatus ||
+                      key === PossibleStaticAttributesEnums.derivedTagStatus
+                    ) {
+                      @if (
+                        this.entityDynamicFieldsDefinitionList[key]?.[
+                          this.platformBasedAttributeVisibilityKey
+                        ]
+                      ) {
+                        <div [ngClass]="item[key]" class="rag-dot"></div>
+                      }
+                    } @else {
+                      <div class="value mb-1 text-wrap">{{ item[key] }}</div>
+                    }
+                  </div>
+                </ng-template>
+              </div>
+              <mat-divider></mat-divider>
+            </div>
+          </div>
+        </div>
+      } @else {
+        <div style="min-width: 100%; min-height: 380px">
+          <app-no-records class="w-100"></app-no-records>
+        </div>
+      }
+    }
+  </div>
+  <div class="fixed-section">
+    <div class="pagination-slider">
+      <button
+        class="arrow-button"
+        (click)="previousList()"
+        [disabled]="currentPage === 0"
+      >
+        &#8249;
+      </button>
+      <span class="current-page">{{ currentPage + 1 }}</span>
+      <input
+        type="range"
+        min="0"
+        [max]="totalPages - 1"
+        [(ngModel)]="currentPage"
+        (change)="onSliderChange($event)"
+      />
+      <span class="total-pages">{{ totalPages }}</span>
+      <button
+        class="arrow-button"
+        (click)="nextList()"
+        [disabled]="currentPage === totalPages - 1"
+      >
+        &#8250;
+      </button>
+    </div>
+  </div>
+</div>
+
+<ng-template #Add_Attribute>
+  <app-add-entity-data
+    [addEntityDataModalRef]="addEntityDataModalRef"
+    [entityStaticData]="entityStaticData"
+    [entityDynamicData]="entityDynamicData"
+    [selectedEntityType]="selectedEntityType"
+    (openEntityDataPicker)="openEntityDataPickerForAdd($event)"
+    (entityDataAdded)="entityDataAdded()"
+    [approvalRequired]="approvalRequired"
+  >
+  </app-add-entity-data>
+</ng-template>
+
+<ng-template #AssociateChargeToAgreement>
+  <app-add-entity-data
+    [addEntityDataModalRef]="associateChargesToAgreementModalRef"
+    [entityStaticData]="entityStaticDataForChargesAssociate"
+    [entityDynamicData]="entityDynamicDataForChargesAssociate"
+    [selectedEntityType]="AddEntityDataByTypeEnums.chargesToAssociate"
+    (openEntityDataPicker)="openEntityDataPickerForAdd($event)"
+    (entityDataAdded)="
+      selectedEntityData(AddEntityDataByTypeEnums.chargesToAssociate)
+    "
+  >
+  </app-add-entity-data>
+</ng-template>
+
+<ng-template #SelectPlace>
+  <app-modal
+    [modalReference]="selectAEntityRef"
+    [title]="'Select Place'"
+    [btnTwoLabel]="'Select'"
+    (btnTwoFunction)="selectedEntityData(EntityType.Places)"
+    [hideDismiss]="false"
+    [isPaddingRequired]="false"
+  >
+    <app-entity-data-wrapper
+      [pickerType]="EntityType.Places"
+      [isHeaderRequired]="false"
+    ></app-entity-data-wrapper>
+  </app-modal>
+</ng-template>
+
+<ng-template #SelectTenant>
+  <app-modal
+    [modalReference]="selectAEntityRef"
+    [title]="'Select Tenant'"
+    [btnTwoLabel]="'Select'"
+    (btnTwoFunction)="selectedEntityData(EntityType.Tenants)"
+    [hideDismiss]="false"
+    [isPaddingRequired]="false"
+  >
+    <app-entity-data-wrapper
+      [pickerType]="EntityType.Tenants"
+      [isHeaderRequired]="false"
+    ></app-entity-data-wrapper>
+  </app-modal>
+</ng-template>
+
+<ng-template #SelectActiveEquipment>
+  <app-modal
+    [modalReference]="selectAEntityRef"
+    [title]="'Select Equipment'"
+    [btnTwoLabel]="'Select'"
+    (btnTwoFunction)="selectedEntityData(EntityType.ActiveEquipments)"
+    [hideDismiss]="false"
+    [isPaddingRequired]="false"
+    (btnCancel)="cancelledEquipmentParentPick()"
+  >
+    <app-entity-data-wrapper
+      [pickerType]="EntityType.ActiveEquipments"
+      [isHeaderRequired]="false"
+    ></app-entity-data-wrapper>
+  </app-modal>
+</ng-template>
+
+<ng-template #SelectPassiveEquipment>
+  <app-modal
+    [modalReference]="selectAEntityRef"
+    [title]="'Select Equipment'"
+    [btnTwoLabel]="'Select'"
+    (btnTwoFunction)="selectedEntityData(EntityType.PassiveEquipments)"
+    [hideDismiss]="false"
+    [isPaddingRequired]="false"
+    (btnCancel)="cancelledEquipmentParentPick()"
+  >
+    <app-entity-data-wrapper
+      [pickerType]="EntityType.PassiveEquipments"
+      [isHeaderRequired]="false"
+    ></app-entity-data-wrapper>
+  </app-modal>
+</ng-template>
+
+<ng-template #SelectSite>
+  <app-modal
+    [modalReference]="selectAEntityRef"
+    [title]="'Select Site'"
+    [btnTwoLabel]="'Select'"
+    (btnTwoFunction)="selectedEntityData(EntityType.Sites)"
+    [hideDismiss]="false"
+    [isPaddingRequired]="false"
+  >
+    <app-entity-data-wrapper
+      [pickerType]="EntityType.Sites"
+      [isHeaderRequired]="false"
+    ></app-entity-data-wrapper>
+  </app-modal>
+</ng-template>
+
+<ng-template #SelectContact>
+  <app-modal
+    [modalReference]="selectAEntityRef"
+    [title]="'Select Contact'"
+    [btnTwoLabel]="'Select'"
+    (btnTwoFunction)="selectedEntityData(EntityType.Contacts)"
+    [hideDismiss]="false"
+    [isPaddingRequired]="false"
+  >
+    <app-entity-data-wrapper
+      [pickerType]="EntityType.Contacts"
+      [isHeaderRequired]="false"
+    ></app-entity-data-wrapper>
+  </app-modal>
+</ng-template>
+
+<ng-template #SelectLocation>
+  <app-modal
+    [modalReference]="selectLocationRef"
+    [title]="'Select Location'"
+    [btnTwoLabel]="'Select'"
+    [btnOneLabel]="'Cancel'"
+    (btnTwoFunction)="locationSelected()"
+    [hideDismiss]="false"
+    [isPaddingRequired]="false"
+    (isClosePopupAndRefreshRequired)="locationPopupClosed()"
+  >
+    <mat-tab-group
+      fitInkBarToContent
+      mat-stretch-tabs="false"
+      mat-align-tabs="start"
+      class="bg-ffffff tab-group h-100"
+      (selectedTabChange)="onTabChange($event)"
+    >
+      <mat-tab label="Places">
+        <ng-template mat-tab-label>
+          <span class="tab-label">Places</span>
+        </ng-template>
+        <mat-divider></mat-divider>
+        @if (selectedTabIndex === 0) {
+          <app-entity-data-wrapper
+            [pickerType]="locationTypeEnums.places"
+            [isHeaderRequired]="false"
+          ></app-entity-data-wrapper>
+        }
+      </mat-tab>
+      <mat-tab label="Sites">
+        <ng-template mat-tab-label>
+          <span class="tab-label">Sites</span>
+        </ng-template>
+        <mat-divider></mat-divider>
+        @if (selectedTabIndex === 1) {
+          <app-entity-data-wrapper
+            [pickerType]="locationTypeEnums.sites"
+            [isHeaderRequired]="false"
+          ></app-entity-data-wrapper>
+        }
+      </mat-tab>
+      <mat-tab label="Contacts">
+        <ng-template mat-tab-label>
+          <span class="tab-label">Contacts</span>
+        </ng-template>
+        <mat-divider></mat-divider>
+        @if (selectedTabIndex === 2) {
+          <mat-tab-group
+            fitInkBarToContent
+            mat-stretch-tabs="false"
+            mat-align-tabs="start"
+            class="bg-ffffff tab-group h-100"
+            (selectedTabChange)="onContactsTabChange($event)"
+          >
+            <mat-tab label="Staff">
+              <ng-template mat-tab-label>
+                <span class="tab-label">Staff</span>
+              </ng-template>
+              <mat-divider></mat-divider>
+              @if (selectedContactsTabIndex === 0) {
+                <app-entity-data-wrapper
+                  [pickerType]="locationTypeEnums.contacts_staffs"
+                  [isHeaderRequired]="false"
+                ></app-entity-data-wrapper>
+              }
+            </mat-tab>
+            <mat-tab label="Contractor">
+              <ng-template mat-tab-label>
+                <span class="tab-label">Contractor</span>
+              </ng-template>
+              <mat-divider></mat-divider>
+              @if (selectedContactsTabIndex === 1) {
+                <app-entity-data-wrapper
+                  [pickerType]="locationTypeEnums.contacts_contractor"
+                  [isHeaderRequired]="false"
+                ></app-entity-data-wrapper>
+              }
+            </mat-tab>
+          </mat-tab-group>
+        }
+      </mat-tab>
+    </mat-tab-group>
+  </app-modal>
+</ng-template>

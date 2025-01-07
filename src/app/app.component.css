@@ -1,0 +1,144 @@
+body {
+  font-family: inherit !important;
+}
+
+mat-toolbar {
+  position: relative;
+  z-index: 5;
+  background-color: var(--primary-color);
+}
+
+.title {
+  margin-left: 16px;
+  color: white;
+}
+
+.toolbar-fixed {
+  position: fixed;
+}
+
+mat-sidenav-container {
+  height: 100%;
+}
+
+.search-input {
+  margin: 0px 10px 0px 20px;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: inherit;
+  padding: 0px 15px;
+  width: 84% !important;
+  height: 40px;
+}
+
+.search-icon {
+  height: 18px;
+  position: relative;
+  right: 35px;
+  top: 0px;
+}
+
+.super-nav-right-item {
+  text-align: right;
+  line-height: 1;
+  display: flex;
+  flex-direction: column;
+  margin: 0px !important;
+  margin-right: 20px;
+  color: #fff;
+}
+
+.flex-end {
+  display: flex;
+  justify-content: end;
+}
+
+.font-token {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.divider-width {
+  width: 96%;
+  margin: 0 auto;
+  height: 1px;
+  background-color: #dddddd;
+}
+
+.font-14 {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.menu-slider {
+  height: 16px !important;
+  padding-left: 10px !important;
+  padding-right: 10px !important;
+  cursor: pointer;
+}
+
+.menu-back {
+  height: 22px !important;
+  padding-left: 10px !important;
+  padding-right: 10px !important;
+  cursor: pointer;
+}
+
+.header-logo {
+  height: 38px;
+}
+
+.nav-profile-pic {
+  height: 40px;
+  cursor: pointer;
+}
+
+.drop-down-icon {
+  height: 15px;
+  cursor: pointer;
+  margin: 30px 0px 5px 5px;
+}
+.matmenu-padding {
+  padding: 5px;
+}
+.mat-box {
+  width: 100%;
+  min-width: 250px;
+  text-align: center;
+  padding: 16px;
+}
+
+.profile-placeholder-icon {
+  height: 40px;
+}
+
+.login-info {
+  padding: 5px;
+}
+
+.login-time {
+  font-weight: 400;
+  font-size: 12px;
+}
+
+.logout-background {
+  background-color: #e7eef4;
+}
+
+.logout-icon {
+  height: 30px;
+}
+
+.router {
+  height: 100%;
+}
+
+.nav-container-main {
+  height: calc(100% - 56px);
+  display: flex;
+  flex-direction: column;
+}
+
+.mat-toolbar-row {
+  padding: 0px 0px !important;
+}
